@@ -1,6 +1,6 @@
 # Machine-Learning-Specialization-Coursera
 
-This repository contains solutions, everything I learnt and did during the specialization training in Machine Learning offered by Stanford University and Deeplearning.AI - Coursera (2022).
+This repository contains solutions, everything I learnt and did during the specialization training in Machine Learning offered by Stanford University and DeepLearning.AI - Coursera (2022).
 
 **Course name : [Supervised Machine Learning: Regression and Classification](https://www.coursera.org/learn/machine-learning)** <br />  
 **Completed with 100% yay <br />**  
