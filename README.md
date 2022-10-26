@@ -4,7 +4,7 @@ This repository contains solutions, everything I learnt and did during the speci
 
 **Course name : [Supervised Machine Learning: Regression and Classification](https://www.coursera.org/learn/machine-learning)** <br />  
 **Completed with 100% yay <br />**  
-**[Certificate](https://coursera.org/share/af159059b492b518431735a4d6e287b2)**  <br />
+**[Certificate](https://coursera.org/share/5bdbda3f14262b22782bb153174f8660)**  <br />
 
 
  <br />
