@@ -1,81 +1,41 @@
+from tensorflow.keras.activations import relu, linear
+from tensorflow.keras.layers import Dense
+
 import numpy as np
-import random
 
-def select_threshold_test(target):
-    p_val = np.array([i / 100 for i in range(30)])
-    y_val = np.array([1] * 5 + [0] * 25)
-    
-    best_epsilon, best_F1 = target(y_val, p_val)
-    assert np.isclose(best_epsilon, 0.04, atol=0.3 / 1000), f"Wrong best_epsilon. Expected: {0.04} got: {best_epsilon}"
-    assert best_F1 == 1, f"Wrong best_F1. Expected: 1 got: {best_F1}"
-    
-    y_val = np.array([1] * 5 + [0] * 25)
-    y_val[2] = 0 # Introduce noise
-    best_epsilon, best_F1 = target(y_val, p_val)
-    assert np.isclose(best_epsilon, 0.04, atol=0.3 / 1000), f"Wrong best_epsilon. Expected: {0.04} got: {best_epsilon}"
-    assert np.isclose(best_F1, 0.8888888), f"Wrong best_F1. Expected: 0.8888888 got: {best_F1}"
-    
-    p_val = np.array([i / 1000 for i in range(50)])
-    y_val = np.array([1] * 8 + [0] * 42)
-    y_val[5] = 0
-    index = [*range(50)]
-    random.shuffle(index)
-    p_val = p_val[index]
-    y_val = y_val[index]
+def test_tower(target):
+    num_outputs = 32
+    i = 0
+    assert len(target.layers) == 3, f"Wrong number of layers. Expected 3 but got {len(target.layers)}"
+    expected = [[Dense, [None, 256], relu],
+                [Dense, [None, 128], relu],
+                [Dense, [None, num_outputs], linear]]
 
-    best_epsilon, best_F1 = target(y_val, p_val)
-    assert np.isclose(best_epsilon, 0.007, atol=0.05 / 1000), f"Wrong best_epsilon. Expected: {0.0070070} got: {best_epsilon}"
-    assert np.isclose(best_F1, 0.933333333), f"Wrong best_F1. Expected: 0.933333333 got: {best_F1}"
+    for layer in target.layers:
+        assert type(layer) == expected[i][0], \
+            f"Wrong type in layer {i}. Expected {expected[i][0]} but got {type(layer)}"
+        assert layer.output.shape.as_list() == expected[i][1], \
+            f"Wrong number of units in layer {i}. Expected {expected[i][1]} but got {layer.output.shape.as_list()}"
+        assert layer.activation == expected[i][2], \
+            f"Wrong activation in layer {i}. Expected {expected[i][2]} but got {layer.activation}"
+        i = i + 1
+
     print("\033[92mAll tests passed!")
+
+
+def test_sq_dist(target):
+    a1 = np.array([1.0, 2.0, 3.0]); b1 = np.array([1.0, 2.0, 3.0])
+    c1 = target(a1, b1)
+    a2 = np.array([1.1, 2.1, 3.1]); b2 = np.array([1.0, 2.0, 3.0])
+    c2 = target(a2, b2)
+    a3 = np.array([0, 1]);          b3 = np.array([1, 0])
+    c3 = target(a3, b3)
+    a4 = np.array([1, 1, 1, 1, 1]); b4 = np.array([0, 0, 0, 0, 0])
+    c4 = target(a4, b4)
     
-def estimate_gaussian_test(target):
-    np.random.seed(273)
+    assert np.isclose(c1, 0), f"Wrong value. Expected {0}, got {c1}"
+    assert np.isclose(c2, 0.03), f"Wrong value. Expected {0.03}, got {c2}" 
+    assert np.isclose(c3, 2), f"Wrong value. Expected {2}, got {c3}" 
+    assert np.isclose(c4, 5), f"Wrong value. Expected {5}, got {c4}" 
     
-    X = np.array([[1, 1, 1], 
-                  [2, 2, 2], 
-                  [3, 3, 3]]).T
-    
-    mu, var = target(X)
-    
-    assert type(mu) == np.ndarray, f"Wrong type for mu. Expected: {np.ndarray} got: {type(mu)}"
-    assert type(var) == np.ndarray, f"Wrong type for var. Expected: {np.ndarray} got: {type(var)}"
-    
-    assert mu.shape == (X.shape[1],), f"Wrong shape for mu. Expected: {(X.shape[1],)} got: {mu.shape}"
-    assert type(var) == np.ndarray, f"Wrong shape for var. Expected: {(X.shape[1],)} got: {var.shape}"
-    
-    assert np.allclose(mu, [1., 2., 3.]), f"Wrong value for mu. Expected: {[1, 2, 3]} got: {mu}"
-    assert np.allclose(var, [0., 0., 0.]), f"Wrong value for var. Expected: {[0, 0, 0]} got: {var}"
-    
-    X = np.array([[1, 2, 3], 
-                  [2, 4, 6], 
-                  [3, 6, 9]]).T
-    
-    mu, var = target(X)
-    
-    assert type(mu) == np.ndarray, f"Wrong type for mu. Expected: {np.ndarray} got: {type(mu)}"
-    assert type(var) == np.ndarray, f"Wrong type for var. Expected: {np.ndarray} got: {type(var)}"
-    
-    assert mu.shape == (X.shape[1],), f"Wrong shape for mu. Expected: {(X.shape[1],)} got: {mu.shape}"
-    assert type(var) == np.ndarray, f"Wrong shape for var. Expected: {(X.shape[1],)} got: {var.shape}"
-    
-    assert np.allclose(mu, [2., 4., 6.]), f"Wrong value for mu. Expected: {[2., 4., 6.]} got: {mu}"
-    assert np.allclose(var, [2. / 3, 8. / 3., 18. / 3.]), f"Wrong value for var. Expected: {[2. / 3, 8. / 3., 18. / 3.]} got: {var}"
-    
-    
-    m = 500
-    X = np.array([np.random.normal(0, 1, m), 
-                  np.random.normal(1, 2, m), 
-                  np.random.normal(3, 1.5, m)]).T
-    
-    mu, var = target(X)
-    
-    assert type(mu) == np.ndarray, f"Wrong type for mu. Expected: {np.ndarray} got: {type(mu)}"
-    assert type(var) == np.ndarray, f"Wrong type for var. Expected: {np.ndarray} got: {type(var)}"
-    
-    assert mu.shape == (X.shape[1],), f"Wrong shape for mu. Expected: {(X.shape[1],)} got: {mu.shape}"
-    assert type(var) == np.ndarray, f"Wrong shape for var. Expected: {(X.shape[1],)} got: {var.shape}"
-    
-    assert np.allclose(mu, [0., 1., 3.], atol=0.2), f"Wrong value for mu. Expected: {[0, 1, 3]} got: {mu}"
-    assert np.allclose(var, np.square([1., 2., 1.5]), atol=0.2), f"Wrong value for var. Expected: {np.square([1., 2., 1.5])} got: {var}"
-    
-    print("\033[92mAll tests passed!")
+    print('\033[92mAll tests passed!')
