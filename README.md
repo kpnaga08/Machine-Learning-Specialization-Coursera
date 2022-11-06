@@ -13,6 +13,3 @@ This repository contains solutions, everything I learnt and did during the **[sp
 
  <br />
   <br />
-
-
-**© Kristina P. Sinaga 2022 All Rights reserved.**
