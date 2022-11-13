@@ -1,6 +1,6 @@
 # Machine-Learning-Specialization-Coursera
 
-# Machine-Learning-Specialization![certificate](CourseraSRMA3U26GNXP.jpg)
+# Machine-Learning-Specialization![certificate](CourseraSRMA3U26GNXP.png)
 
 This repository contains solutions, everything I learnt and did during the **[specialization training in Machine Learning](https://www.coursera.org/specializations/machine-learning-introduction#courses)** offered by [Stanford University and DeepLearning.AI - Coursera (2022)](https://www.coursera.org/specializations/machine-learning-introduction#courses).
 
