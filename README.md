@@ -10,6 +10,9 @@ This repository contains solutions, everything I learnt and did during the **[sp
 
 **[Certificate](https://coursera.org/share/5bdbda3f14262b22782bb153174f8660)**  <br />
 
+# Machine-Learning-Specialization
+![certificate](CourseraF7RVEX9JSZLX.JPEG)
+
 
  <br />
   <br />
